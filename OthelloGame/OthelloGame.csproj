@@ -9,11 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="AI\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Forms\" />
-    <Folder Include="Assets\" />
+    <Folder Include="Assets\Images\" />
   </ItemGroup>
 
 </Project>

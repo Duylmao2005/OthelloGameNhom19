@@ -1,4 +1,4 @@
-namespace OthelloGame
+﻿namespace OthelloGame
 {
     internal static class Program
     {
