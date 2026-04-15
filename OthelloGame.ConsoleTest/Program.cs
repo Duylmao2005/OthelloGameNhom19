@@ -1,73 +1,85 @@
 ﻿using System;
-using OthelloGame.Models;
 using OthelloGame.AI;
+using OthelloGame.Models;
 
 namespace OthelloGame
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("=== TEST GREEDY AI ===\n");
+            Board board = new Board();
 
-            GameState state = new GameState();
-            GreedyAI greedyAI = new GreedyAI();
+            IAIPlayer ai = new MinimaxAI(depth: 3);
 
-            int turnCount = 0;
+            PieceColor aiColor = PieceColor.Black;
+            PieceColor humanColor = PieceColor.White;
 
-            while (!state.IsGameOver())
+            PieceColor current = PieceColor.Black;
+
+            while (!board.IsGameOver())
             {
-                turnCount++;
-                Console.WriteLine($"--- Lượt {turnCount} | Người đi: {state.CurrentPlayer} ---");
-                state.Board.PrintToConsole();
+                Console.Clear();
+                board.PrintToConsole();
 
-                var validMoves = state.GetValidMoves();
+                Console.WriteLine($"\nCurrent turn: {current}");
 
-                // Không có nước đi → pass
+                var validMoves = board.GetValidMoves(current);
+
                 if (validMoves.Count == 0)
                 {
-                    Console.WriteLine($"{state.CurrentPlayer} không có nước đi → PASS\n");
-                    state.PassTurn();
+                    Console.WriteLine("No valid moves -> pass turn");
+                    current = current.Opposite();
+                    Console.ReadKey();
                     continue;
                 }
 
-                (int row, int col) move;
-
-                // Đen → người chơi tự nhập
-                if (state.CurrentPlayer == PieceColor.Black)
+                if (current == aiColor)
                 {
-                    Console.WriteLine("Nước đi hợp lệ: ");
-                    foreach (var m in validMoves)
-                        Console.Write($"({m.row},{m.col}) ");
-                    Console.WriteLine();
-                    Console.Write("Bạn chọn (row col): ");
-                    int r = int.Parse(Console.ReadLine());
-                    int c = int.Parse(Console.ReadLine());
-                    move = (r, c);
+                    Console.WriteLine("AI is thinking...");
+
+                    var move = ai.GetMove(board, aiColor);
+
+                    Console.WriteLine($"AI plays: {move.row}, {move.col}");
+
+                    board.ApplyMove(move.row, move.col, aiColor);
                 }
-                // Trắng → GreedyAI tự chọn
                 else
                 {
-                    move = greedyAI.GetMove(state.Board, state.CurrentPlayer);
-                    Console.WriteLine($"Greedy AI chọn: ({move.row}, {move.col})");
+                    Console.WriteLine("Your valid moves:");
+
+                    for (int i = 0; i < validMoves.Count; i++)
+                    {
+                        Console.WriteLine($"{i}: {validMoves[i].row}, {validMoves[i].col}");
+                    }
+
+                    Console.Write("Choose move index: ");
+
+                    string input = Console.ReadLine();
+
+                    if (!int.TryParse(input, out int idx) || idx < 0 || idx >= validMoves.Count)
+                    {
+                        Console.WriteLine("Invalid input!");
+                        Console.ReadKey();
+                        continue;
+                    }
+
+                    var move = validMoves[idx];
+                    board.ApplyMove(move.row, move.col, humanColor);
                 }
 
-                state.MakeMove(move.row, move.col);
-                Console.WriteLine();
+                current = current.Opposite();
             }
 
-            // Kết quả
-            var (black, white) = state.GetScores();
-            Console.WriteLine("=== KẾT QUẢ ===");
-            Console.WriteLine($"Đen (bạn):     {black} quân");
-            Console.WriteLine($"Trắng (Greedy): {white} quân");
+            Console.Clear();
+            board.PrintToConsole();
 
-            PieceColor winner = state.GetWinner();
-            if (winner == PieceColor.Empty)
-                Console.WriteLine("Kết quả: HÒA!");
-            else
-                Console.WriteLine($"Người thắng: {winner}");
+            Console.WriteLine("\nGame Over!");
 
+            Console.WriteLine($"Black: {board.GetScore(PieceColor.Black)}");
+            Console.WriteLine($"White: {board.GetScore(PieceColor.White)}");
+
+            Console.WriteLine("\nPress any key...");
             Console.ReadKey();
         }
     }
