@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OthelloGame.AI
 {
-    internal interface IAIPlayer
+    internal class GreedyAI
     {
     }
 }
