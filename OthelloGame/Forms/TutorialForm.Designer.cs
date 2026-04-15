@@ -38,7 +38,7 @@
             // 
             panel1.AutoScroll = true;
             panel1.Controls.Add(pictureBox1);
-            panel1.Dock = DockStyle.Fill;
+            panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
             panel1.Size = new Size(800, 450);
@@ -46,11 +46,12 @@
             // 
             // pictureBox1
             // 
-            pictureBox1.BackgroundImage = Properties.Resources.Tutorial;
-            pictureBox1.Location = new Point(257, 169);
+            pictureBox1.Dock = DockStyle.Top;
+            pictureBox1.Image = Properties.Resources.Tutorial;
+            pictureBox1.Location = new Point(0, 0);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(125, 62);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.Size = new Size(779, 3954);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
