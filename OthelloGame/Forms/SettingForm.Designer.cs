@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            groupBox1 = new GroupBox();
-            radioButton1 = new RadioButton();
-            radioButton2 = new RadioButton();
-            radioButton3 = new RadioButton();
+            groupBoxDifficult = new GroupBox();
+            ratioBtnHard = new RadioButton();
+            ratioBtnNormal = new RadioButton();
+            ratioBtnEasy = new RadioButton();
             groupBox3 = new GroupBox();
             radioButton7 = new RadioButton();
             radioButton8 = new RadioButton();
@@ -39,55 +39,55 @@
             radioButton6 = new RadioButton();
             radioButton5 = new RadioButton();
             groupBox2 = new GroupBox();
-            groupBox1.SuspendLayout();
+            groupBoxDifficult.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox2.SuspendLayout();
             SuspendLayout();
             // 
-            // groupBox1
+            // groupBoxDifficult
             // 
-            groupBox1.Controls.Add(radioButton3);
-            groupBox1.Controls.Add(radioButton2);
-            groupBox1.Controls.Add(radioButton1);
-            groupBox1.Location = new Point(109, 49);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(572, 78);
-            groupBox1.TabIndex = 0;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "ĐỘ KHÓ:";
+            groupBoxDifficult.Controls.Add(ratioBtnHard);
+            groupBoxDifficult.Controls.Add(ratioBtnNormal);
+            groupBoxDifficult.Controls.Add(ratioBtnEasy);
+            groupBoxDifficult.Location = new Point(109, 49);
+            groupBoxDifficult.Name = "groupBoxDifficult";
+            groupBoxDifficult.Size = new Size(572, 78);
+            groupBoxDifficult.TabIndex = 0;
+            groupBoxDifficult.TabStop = false;
+            groupBoxDifficult.Text = "ĐỘ KHÓ:";
             // 
-            // radioButton1
+            // ratioBtnHard
             // 
-            radioButton1.AutoSize = true;
-            radioButton1.Location = new Point(50, 38);
-            radioButton1.Name = "radioButton1";
-            radioButton1.Size = new Size(49, 24);
-            radioButton1.TabIndex = 0;
-            radioButton1.TabStop = true;
-            radioButton1.Text = "Dễ";
-            radioButton1.UseVisualStyleBackColor = true;
+            ratioBtnHard.AutoSize = true;
+            ratioBtnHard.Location = new Point(434, 38);
+            ratioBtnHard.Name = "ratioBtnHard";
+            ratioBtnHard.Size = new Size(56, 24);
+            ratioBtnHard.TabIndex = 2;
+            ratioBtnHard.TabStop = true;
+            ratioBtnHard.Text = "Khó";
+            ratioBtnHard.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
+            // ratioBtnNormal
             // 
-            radioButton2.AutoSize = true;
-            radioButton2.Location = new Point(229, 38);
-            radioButton2.Name = "radioButton2";
-            radioButton2.Size = new Size(81, 24);
-            radioButton2.TabIndex = 1;
-            radioButton2.TabStop = true;
-            radioButton2.Text = "Thường";
-            radioButton2.UseVisualStyleBackColor = true;
+            ratioBtnNormal.AutoSize = true;
+            ratioBtnNormal.Location = new Point(229, 38);
+            ratioBtnNormal.Name = "ratioBtnNormal";
+            ratioBtnNormal.Size = new Size(81, 24);
+            ratioBtnNormal.TabIndex = 1;
+            ratioBtnNormal.TabStop = true;
+            ratioBtnNormal.Text = "Thường";
+            ratioBtnNormal.UseVisualStyleBackColor = true;
             // 
-            // radioButton3
+            // ratioBtnEasy
             // 
-            radioButton3.AutoSize = true;
-            radioButton3.Location = new Point(434, 38);
-            radioButton3.Name = "radioButton3";
-            radioButton3.Size = new Size(56, 24);
-            radioButton3.TabIndex = 2;
-            radioButton3.TabStop = true;
-            radioButton3.Text = "Khó";
-            radioButton3.UseVisualStyleBackColor = true;
+            ratioBtnEasy.AutoSize = true;
+            ratioBtnEasy.Location = new Point(50, 38);
+            ratioBtnEasy.Name = "ratioBtnEasy";
+            ratioBtnEasy.Size = new Size(49, 24);
+            ratioBtnEasy.TabIndex = 0;
+            ratioBtnEasy.TabStop = true;
+            ratioBtnEasy.Text = "Dễ";
+            ratioBtnEasy.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
@@ -176,12 +176,12 @@
             ClientSize = new Size(800, 450);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
-            Controls.Add(groupBox1);
+            Controls.Add(groupBoxDifficult);
             DoubleBuffered = true;
             Name = "SettingForm";
             Text = "Cài Đặt";
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            groupBoxDifficult.ResumeLayout(false);
+            groupBoxDifficult.PerformLayout();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             groupBox2.ResumeLayout(false);
@@ -191,10 +191,10 @@
 
         #endregion
 
-        private GroupBox groupBox1;
-        private RadioButton radioButton3;
-        private RadioButton radioButton2;
-        private RadioButton radioButton1;
+        private GroupBox groupBoxDifficult;
+        private RadioButton ratioBtnHard;
+        private RadioButton ratioBtnNormal;
+        private RadioButton ratioBtnEasy;
         private GroupBox groupBox3;
         private RadioButton radioButton7;
         private RadioButton radioButton8;

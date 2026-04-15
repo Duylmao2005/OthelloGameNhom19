@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using OthelloGame.Models;
 
 namespace OthelloGame.AI
 {
-    internal interface IAIPlayer
+    public interface IAIPlayer
     {
+        /// <summary>
+        /// Trả về nước đi tốt nhất cho AI
+        /// </summary>
+        (int row, int col) GetMove(Board board, PieceColor aiColor);
+
+        /// <summary>
+        /// Tên AI (hiển thị UI)
+        /// </summary>
+        string Name { get; }
     }
 }
