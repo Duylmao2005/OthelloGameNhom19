@@ -109,6 +109,7 @@
             btnHuongDan.TabIndex = 5;
             btnHuongDan.Text = "Hướng dẫn";
             btnHuongDan.UseVisualStyleBackColor = false;
+            btnHuongDan.Click += btnHuongDan_Click;
             // 
             // btnSettings
             // 

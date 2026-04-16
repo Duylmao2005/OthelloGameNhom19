@@ -125,5 +125,11 @@ namespace OthelloGame.Forms
         {
             BtnPvP_Click(sender, e);
         }
+
+        private void btnHuongDan_Click(object sender, EventArgs e)
+        {
+            TutorialForm f = new TutorialForm();
+            f.Show(); // mở form
+        }
     }
 }

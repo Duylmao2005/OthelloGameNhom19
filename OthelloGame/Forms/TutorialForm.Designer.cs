@@ -38,7 +38,7 @@
             // 
             panel1.AutoScroll = true;
             panel1.Controls.Add(pictureBox1);
-            panel1.Dock = DockStyle.Top;
+            panel1.Dock = DockStyle.Fill;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
             panel1.Size = new Size(800, 450);
@@ -54,6 +54,7 @@
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click;
             // 
             // TutorialForm
             // 
@@ -62,6 +63,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(panel1);
             Name = "TutorialForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "TutorialForm";
             panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
