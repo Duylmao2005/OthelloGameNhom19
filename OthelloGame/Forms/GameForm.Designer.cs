@@ -54,7 +54,9 @@
             // 
             // tlpRoot
             // 
+            tlpRoot.BackColor = Color.FromArgb(128, 128, 255);
             tlpRoot.BackgroundImage = Properties.Resources.background_xanh_1;
+            tlpRoot.BackgroundImageLayout = ImageLayout.Stretch;
             tlpRoot.ColumnCount = 3;
             tlpRoot.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 220F));
             tlpRoot.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
