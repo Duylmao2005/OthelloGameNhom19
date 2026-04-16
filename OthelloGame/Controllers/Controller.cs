@@ -79,5 +79,11 @@ namespace OthelloGame.Core.Controllers
         {
             return _gameState.CurrentPlayer;
         }
+
+        // Nếu người hiện tại hết nước đi, tự pass sang người kia
+        public bool EnsureCurrentPlayerCanMove()
+        {
+            return _gameState.EnsureCurrentPlayerCanMove();
+        }
     }
 }

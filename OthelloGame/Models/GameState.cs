@@ -37,6 +37,7 @@ namespace OthelloGame.Models
             PassCount = 0;
 
             SwitchPlayer();
+            AutoPassIfNoMoves();
             return true;
         }
 
@@ -45,12 +46,36 @@ namespace OthelloGame.Models
         {
             PassCount++;
             SwitchPlayer();
+            AutoPassIfNoMoves();
         }
 
         // Đổi lượt
         private void SwitchPlayer()
         {
             CurrentPlayer = CurrentPlayer.Opposite();
+        }
+
+        /// <summary>
+        /// Nếu người hiện tại không có nước đi hợp lệ, tự động pass sang người còn lại.
+        /// Trường hợp cả 2 đều không có nước đi thì game over (PassCount sẽ tăng tới 2).
+        /// </summary>
+        public bool EnsureCurrentPlayerCanMove()
+        {
+            if (IsGameOver()) return false;
+            if (Board.GetValidMoves(CurrentPlayer).Count > 0) return false;
+
+            PassTurn();
+            return true;
+        }
+
+        private void AutoPassIfNoMoves()
+        {
+            // Auto-pass liên tiếp trong endgame (tối đa 2 lần để kết thúc)
+            while (PassCount < 2 && !Board.IsGameOver() && Board.GetValidMoves(CurrentPlayer).Count == 0)
+            {
+                PassCount++;
+                SwitchPlayer();
+            }
         }
 
         // Kiểm tra có phải pass không

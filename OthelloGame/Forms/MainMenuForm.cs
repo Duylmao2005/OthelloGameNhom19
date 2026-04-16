@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using OthelloGame;
 using OthelloGame.Models;
 
 namespace OthelloGame.Forms
@@ -15,12 +16,17 @@ namespace OthelloGame.Forms
             btnPlaySingle.Click += BtnPlaySingle_Click;
             btnAIPlay.Click += BtnAIPlay_Click;
             btnPvP.Click += BtnPvP_Click;
+            btnContinue.Click += BtnContinue_Click;
+            btnHuongDan.Click += BtnHuongDan_Click;
         }
 
         private void MainMenuForm_Load(object? sender, EventArgs e)
         {
             // đảm bảo đọc cấu hình đã lưu
             AppRuntime.Load();
+
+            // enable/disable Continue theo savegame
+            btnContinue.Enabled = SavedGameStore.Exists();
         }
 
         private void BtnSettings_Click(object? sender, EventArgs e)
@@ -41,7 +47,23 @@ namespace OthelloGame.Forms
 
         private void BtnAIPlay_Click(object? sender, EventArgs e)
         {
-            // "AI play" (ứng biến): Human vs AI nhưng human đi Trắng để AI đi trước
+            // AI play: mặc định cho 2 AI tự chơi, nhưng cho phép chọn mode
+            var choice = MessageBox.Show(
+                this,
+                "Chọn chế độ AI play:\n\nYes = AI vs AI\nNo = Bạn vs AI (AI đi trước)\nCancel = Hủy",
+                "AI play",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question
+            );
+
+            if (choice == DialogResult.Cancel) return;
+            if (choice == DialogResult.Yes)
+            {
+                OpenAIVsAIGame();
+                return;
+            }
+
+            // No: Human vs AI nhưng human đi Trắng để AI đi trước
             OpenGame(enableAI: true, humanColor: PieceColor.White);
         }
 
@@ -51,6 +73,31 @@ namespace OthelloGame.Forms
             OpenGame(enableAI: false, humanColor: PieceColor.Black);
         }
 
+        private void BtnContinue_Click(object? sender, EventArgs e)
+        {
+            if (!SavedGameStore.TryLoad(out var saved) || saved == null)
+            {
+                btnContinue.Enabled = false;
+                MessageBox.Show(this, "Không tìm thấy ván đã lưu.", "Continue", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using var g = new GameForm(saved);
+            Hide();
+            g.ShowDialog(this);
+            Show();
+
+            // sau khi quay lại menu, refresh trạng thái nút Continue
+            btnContinue.Enabled = SavedGameStore.Exists();
+        }
+
+        private void BtnHuongDan_Click(object? sender, EventArgs e)
+        {
+            using var f = new TutorialForm();
+            f.StartPosition = FormStartPosition.CenterParent;
+            f.ShowDialog(this);
+        }
+
         private void OpenGame(bool enableAI, PieceColor humanColor)
         {
             var diff = AppRuntime.Difficulty;
@@ -58,6 +105,19 @@ namespace OthelloGame.Forms
             Hide();
             g.ShowDialog(this);
             Show();
+
+            // New game đã chạy → nếu có save cũ, người chơi có thể đã overwrite/clear
+            btnContinue.Enabled = SavedGameStore.Exists();
+        }
+
+        private void OpenAIVsAIGame()
+        {
+            var diff = AppRuntime.Difficulty;
+            using var g = GameForm.CreateAIVsAI(diff);
+            Hide();
+            g.ShowDialog(this);
+            Show();
+            btnContinue.Enabled = SavedGameStore.Exists();
         }
 
         // giữ lại handler cũ để Designer không lỗi (đang gắn ở btnPvP)

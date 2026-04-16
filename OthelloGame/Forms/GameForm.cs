@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OthelloGame;
 using OthelloGame.AI;
 using OthelloGame.Core.Controllers;
 using OthelloGame.Models;
@@ -25,8 +26,9 @@ namespace OthelloGame.Forms
         // =========================
         private Rectangle _boardRect;          // Vùng vẽ bàn cờ trong pnlBoard
         private int _cellSize;                 // Kích thước 1 ô
-        private bool _showHint;
-        private List<(int row, int col)> _cachedHints = new();
+        private List<(int row, int col)> _cachedValidMoves = new();
+        private bool _showBestMoveHint;
+        private (int row, int col)? _bestMoveHint;
 
         // =========================
         // Game / Controller
@@ -35,7 +37,9 @@ namespace OthelloGame.Forms
         private readonly PieceColor _humanColor;
         private readonly PieceColor _aiColor;
         private bool _enableAI;
+        private bool _aiVsAi;
         private AIDifficulty _difficulty;
+        private readonly SavedGameData? _pendingLoad;
 
         // Lưu lịch sử để Undo (không sửa Models/Controllers → dùng snapshot + reflection)
         private readonly Stack<GameSnapshot> _history = new();
@@ -49,6 +53,13 @@ namespace OthelloGame.Forms
         public GameForm()
             : this(enableAI: false, difficulty: OthelloGame.AppRuntime.Difficulty, humanColor: PieceColor.Black)
         {
+        }
+
+        public GameForm(SavedGameData saved)
+            : this(enableAI: saved.EnableAI, difficulty: saved.Difficulty, humanColor: saved.HumanColor)
+        {
+            _aiVsAi = saved.AiVsAi;
+            _pendingLoad = saved;
         }
 
         /// <summary>
@@ -72,6 +83,7 @@ namespace OthelloGame.Forms
 
             // Gắn sự kiện
             Load += GameForm_Load;
+            FormClosing += GameForm_FormClosing;
             pnlBoard.Paint += PnlBoard_Paint;
             pnlBoard.Resize += (_, __) => pnlBoard.Invalidate();
             pnlBoard.MouseClick += PnlBoard_MouseClick;
@@ -128,7 +140,10 @@ namespace OthelloGame.Forms
             RoundButton(btnUndo);
             RoundButton(btnQuit);
 
-            StartNewGame();
+            if (_pendingLoad != null)
+                LoadFromSavedGame(_pendingLoad);
+            else
+                StartNewGame();
         }
 
         // =========================
@@ -196,11 +211,11 @@ namespace OthelloGame.Forms
             }
 
             // 5) Hint: vẽ vòng tròn rỗng nét đứt tại các ô hợp lệ
-            if (_showHint)
-            {
-                var hints = _cachedHints;
-                DrawHints(g, hints);
-            }
+            DrawHints(g, _cachedValidMoves);
+
+            // Best-move hint (Minimax)
+            if (_showBestMoveHint && _bestMoveHint.HasValue)
+                DrawBestMoveHint(g, _bestMoveHint.Value);
         }
 
         private void DrawMarkerDot(Graphics g, int row, int col)
@@ -298,6 +313,7 @@ namespace OthelloGame.Forms
         private async void PnlBoard_MouseClick(object? sender, MouseEventArgs e)
         {
             if (_isBusy) return;
+            if (_aiVsAi) return;
             if (!_boardRect.Contains(e.Location)) return;
 
             int col = (e.X - _boardRect.Left) / _cellSize;
@@ -331,7 +347,8 @@ namespace OthelloGame.Forms
         private async Task MaybeDoAIMoveAsync()
         {
             if (_controller.IsGameOver()) return;
-            if (_controller.GetCurrentPlayer() != _aiColor) return;
+            if (!_enableAI) return;
+            if (!_aiVsAi && _controller.GetCurrentPlayer() != _aiColor) return;
 
             try
             {
@@ -353,6 +370,12 @@ namespace OthelloGame.Forms
                 _isBusy = false;
                 SetButtonsEnabled(true);
             }
+
+            if (_aiVsAi && !_controller.IsGameOver())
+            {
+                await Task.Delay(250);
+                await MaybeDoAIMoveAsync();
+            }
         }
 
         // =========================
@@ -360,9 +383,13 @@ namespace OthelloGame.Forms
         // =========================
         private void StartNewGame()
         {
-            _showHint = false;
-            _cachedHints = new List<(int row, int col)>();
+            _showBestMoveHint = false;
+            _bestMoveHint = null;
             _history.Clear();
+            _cachedValidMoves = new List<(int row, int col)>();
+
+            // New game → ván cũ không còn ý nghĩa
+            OthelloGame.SavedGameStore.Clear();
 
             // New game sẽ lấy difficulty mới nhất từ runtime (SettingForm đã lưu)
             _difficulty = OthelloGame.AppRuntime.Difficulty;
@@ -371,8 +398,8 @@ namespace OthelloGame.Forms
             _controller.StartGame();
             AfterAnyMoveRefreshUI();
 
-            // Nếu người chọn màu trắng và có AI (AI đi trước) → cho AI chạy trước
-            if (_enableAI && _controller.GetCurrentPlayer() == _aiColor)
+            // Nếu có AI và đến lượt AI (hoặc AI vs AI) → chạy ngay
+            if (_enableAI && (_aiVsAi || _controller.GetCurrentPlayer() == _aiColor))
             {
                 _ = MaybeDoAIMoveAsync();
             }
@@ -400,15 +427,11 @@ namespace OthelloGame.Forms
 
         private void ToggleHint()
         {
-            _showHint = !_showHint;
-            if (_showHint)
-            {
-                _cachedHints = _controller.GetValidMoves();
-            }
+            _showBestMoveHint = !_showBestMoveHint;
+            if (_showBestMoveHint)
+                _bestMoveHint = ComputeBestMoveHint();
             else
-            {
-                _cachedHints.Clear();
-            }
+                _bestMoveHint = null;
             pnlBoard.Invalidate();
         }
 
@@ -452,6 +475,9 @@ namespace OthelloGame.Forms
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
+
+            // Đầu hàng không phải "quit giữa chừng" → không lưu continue
+            OthelloGame.SavedGameStore.Clear();
             Close();
         }
 
@@ -460,13 +486,21 @@ namespace OthelloGame.Forms
         // =========================
         private void AfterAnyMoveRefreshUI()
         {
+            // Auto-pass nếu bên hiện tại hết nước đi (cuối game hay gặp)
+            // Có thể xảy ra nhiều lần liên tiếp, nhưng tối đa 2 lần là game over.
+            while (_controller.EnsureCurrentPlayerCanMove())
+            {
+                // no-op: chỉ cần cập nhật lại sau khi pass
+            }
+
             UpdateScoreLabels();
             UpdateTurnLabel();
 
-            if (_showHint)
-            {
-                _cachedHints = _controller.GetValidMoves();
-            }
+            // Gợi ý nước hợp lệ luôn có sẵn mỗi lượt
+            _cachedValidMoves = _controller.GetValidMoves();
+
+            if (_showBestMoveHint)
+                _bestMoveHint = ComputeBestMoveHint();
 
             pnlBoard.Invalidate();
 
@@ -478,6 +512,15 @@ namespace OthelloGame.Forms
                     : $"Người thắng: {(winner == PieceColor.Black ? "Đen" : "Trắng")}";
 
                 MessageBox.Show(this, msg, "Game Over", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Game kết thúc → clear save để Continue không quay lại ván đã xong
+                OthelloGame.SavedGameStore.Clear();
+            }
+            else
+            {
+                // Nếu sau auto-pass mà đến lượt AI thì cho AI đi tiếp
+                if (_enableAI && (_aiVsAi || _controller.GetCurrentPlayer() == _aiColor))
+                    _ = MaybeDoAIMoveAsync();
             }
         }
 
@@ -504,6 +547,88 @@ namespace OthelloGame.Forms
             btnHint.Enabled = enabled;
             btnUndo.Enabled = enabled;
             btnQuit.Enabled = enabled;
+        }
+
+        public static GameForm CreateAIVsAI(AIDifficulty difficulty)
+        {
+            var f = new GameForm(enableAI: true, difficulty: difficulty, humanColor: PieceColor.Empty)
+            {
+                _aiVsAi = true
+            };
+            return f;
+        }
+
+        private void GameForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                if (_controller.IsGameOver())
+                {
+                    OthelloGame.SavedGameStore.Clear();
+                    return;
+                }
+
+                SaveCurrentGame();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void SaveCurrentGame()
+        {
+            var gs = GetGameStateUnsafe();
+            if (gs == null) return;
+
+            var data = OthelloGame.SavedGameStore.FromGameState(
+                gs.Board,
+                gs.CurrentPlayer,
+                gs.PassCount,
+                enableAI: _enableAI,
+                aiVsAi: _aiVsAi,
+                difficulty: _difficulty,
+                humanColor: _humanColor
+            );
+
+            OthelloGame.SavedGameStore.Save(data);
+        }
+
+        private void LoadFromSavedGame(SavedGameData saved)
+        {
+            _showBestMoveHint = false;
+            _bestMoveHint = null;
+            _history.Clear();
+
+            _enableAI = saved.EnableAI;
+            _aiVsAi = saved.AiVsAi;
+            _difficulty = saved.Difficulty;
+
+            ApplyAIToController();
+
+            var gs = new GameState();
+            SetAutoProperty(gs, nameof(GameState.Board), OthelloGame.SavedGameStore.ToBoard(saved));
+            SetAutoProperty(gs, nameof(GameState.CurrentPlayer), saved.CurrentPlayer);
+            SetAutoProperty(gs, nameof(GameState.PassCount), saved.PassCount);
+
+            // gán _gameState trong controller bằng reflection
+            var field = typeof(GameController).GetField("_gameState", BindingFlags.Instance | BindingFlags.NonPublic);
+            field?.SetValue(_controller, gs);
+
+            AfterAnyMoveRefreshUI();
+
+            if (_enableAI && (_aiVsAi || _controller.GetCurrentPlayer() == _aiColor))
+                _ = MaybeDoAIMoveAsync();
+        }
+
+        private static void SetAutoProperty(object target, string propertyName, object value)
+        {
+            var prop = target.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            if (prop == null) return;
+
+            var setter = prop.GetSetMethod(true);
+            if (setter == null) return;
+            setter.Invoke(target, new[] { value });
         }
 
         private static void DrawTimeBadge(Graphics g, Rectangle rect, string text)
@@ -569,6 +694,46 @@ namespace OthelloGame.Forms
                 AIDifficulty.Hard => new MinimaxAI(depth: 5),
                 _ => new HeuristicAI()
             };
+        }
+
+        private (int row, int col)? ComputeBestMoveHint()
+        {
+            var board = TryGetBoard();
+            if (board == null) return null;
+
+            var current = _controller.GetCurrentPlayer();
+
+            // Nếu là PvAI thì hint chỉ dành cho người chơi
+            if (_enableAI && !_aiVsAi && current != _humanColor) return null;
+            if (_aiVsAi) return null;
+
+            int depth = _difficulty switch
+            {
+                AIDifficulty.Easy => 2,
+                AIDifficulty.Normal => 3,
+                AIDifficulty.Hard => 5,
+                _ => 3
+            };
+
+            var mm = new MinimaxAI(depth);
+            var move = mm.GetMove(board, current);
+            if (move.row < 0 || move.col < 0) return null;
+            return move;
+        }
+
+        private void DrawBestMoveHint(Graphics g, (int row, int col) move)
+        {
+            int margin = Math.Max(10, _cellSize / 5);
+            using var pen = new Pen(Color.FromArgb(230, 0, 255, 0), Math.Max(3, _cellSize / 14f));
+            pen.DashStyle = DashStyle.Solid;
+
+            var rect = new Rectangle(
+                _boardRect.Left + move.col * _cellSize + margin,
+                _boardRect.Top + move.row * _cellSize + margin,
+                _cellSize - margin * 2,
+                _cellSize - margin * 2
+            );
+            g.DrawEllipse(pen, rect);
         }
 
         // =========================
