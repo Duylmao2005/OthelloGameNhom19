@@ -360,7 +360,6 @@ namespace OthelloGame.Forms
 
                 await Task.Delay(500); // (delay 1 giây)
 
-
                 await Task.Run(() => _controller.HandleAIMove());
 
                 AfterAnyMoveRefreshUI();
@@ -490,7 +489,7 @@ namespace OthelloGame.Forms
             // Có thể xảy ra nhiều lần liên tiếp, nhưng tối đa 2 lần là game over.
             while (_controller.EnsureCurrentPlayerCanMove())
             {
-                // no-op: chỉ cần cập nhật lại sau khi pass
+                // no-op
             }
 
             UpdateScoreLabels();
