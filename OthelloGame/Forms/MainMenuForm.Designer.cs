@@ -138,6 +138,7 @@
             Controls.Add(label1);
             DoubleBuffered = true;
             Name = "MainMenuForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "MainMenuForm";
             ResumeLayout(false);
             PerformLayout();

@@ -30,17 +30,17 @@
         {
             tlpRoot = new TableLayoutPanel();
             pnlTop = new Panel();
-            pnlBottom = new Panel();
-            lblPlayer1 = new Label();
-            lblScore1 = new Label();
-            lblPlayer2 = new Label();
-            lblScore2 = new Label();
             lblTurn = new Label();
+            lblScore1 = new Label();
+            lblPlayer1 = new Label();
+            pnlBottom = new Panel();
+            lblScore2 = new Label();
+            lblPlayer2 = new Label();
             flpLeft = new FlowLayoutPanel();
-            flpRight = new FlowLayoutPanel();
             btnNewGame = new Button();
             btnSetting = new Button();
             btnSurrender = new Button();
+            flpRight = new FlowLayoutPanel();
             btnHint = new Button();
             btnUndo = new Button();
             btnQuit = new Button();
@@ -54,6 +54,7 @@
             // 
             // tlpRoot
             // 
+            tlpRoot.BackgroundImage = Properties.Resources.background_xanh_1;
             tlpRoot.ColumnCount = 3;
             tlpRoot.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 220F));
             tlpRoot.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
@@ -68,7 +69,7 @@
             tlpRoot.Margin = new Padding(0);
             tlpRoot.Name = "tlpRoot";
             tlpRoot.RowCount = 3;
-            tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 92F));
+            tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 99F));
             tlpRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 92F));
             tlpRoot.Size = new Size(1000, 720);
@@ -85,8 +86,42 @@
             pnlTop.Margin = new Padding(0);
             pnlTop.Name = "pnlTop";
             pnlTop.Padding = new Padding(18, 12, 18, 12);
-            pnlTop.Size = new Size(560, 92);
+            pnlTop.Size = new Size(560, 99);
             pnlTop.TabIndex = 0;
+            // 
+            // lblTurn
+            // 
+            lblTurn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblTurn.AutoSize = true;
+            lblTurn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblTurn.ForeColor = Color.White;
+            lblTurn.Location = new Point(420, 18);
+            lblTurn.Name = "lblTurn";
+            lblTurn.Size = new Size(105, 28);
+            lblTurn.TabIndex = 2;
+            lblTurn.Text = "Lượt: Đen";
+            // 
+            // lblScore1
+            // 
+            lblScore1.AutoSize = true;
+            lblScore1.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblScore1.ForeColor = Color.White;
+            lblScore1.Location = new Point(180, 10);
+            lblScore1.Name = "lblScore1";
+            lblScore1.Size = new Size(128, 41);
+            lblScore1.TabIndex = 1;
+            lblScore1.Text = "Score: 2";
+            // 
+            // lblPlayer1
+            // 
+            lblPlayer1.AutoSize = true;
+            lblPlayer1.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            lblPlayer1.ForeColor = Color.White;
+            lblPlayer1.Location = new Point(50, 5);
+            lblPlayer1.Name = "lblPlayer1";
+            lblPlayer1.Size = new Size(74, 41);
+            lblPlayer1.TabIndex = 0;
+            lblPlayer1.Text = "Đen";
             // 
             // pnlBottom
             // 
@@ -101,61 +136,27 @@
             pnlBottom.Size = new Size(560, 92);
             pnlBottom.TabIndex = 1;
             // 
-            // lblPlayer1
-            // 
-            lblPlayer1.AutoSize = true;
-            lblPlayer1.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            lblPlayer1.ForeColor = Color.Black;
-            lblPlayer1.Location = new Point(18, 14);
-            lblPlayer1.Name = "lblPlayer1";
-            lblPlayer1.Size = new Size(102, 32);
-            lblPlayer1.TabIndex = 0;
-            lblPlayer1.Text = "Player 1";
-            // 
-            // lblScore1
-            // 
-            lblScore1.AutoSize = true;
-            lblScore1.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblScore1.ForeColor = Color.Black;
-            lblScore1.Location = new Point(180, 10);
-            lblScore1.Name = "lblScore1";
-            lblScore1.Size = new Size(132, 41);
-            lblScore1.TabIndex = 1;
-            lblScore1.Text = "Score: 2";
-            // 
-            // lblTurn
-            // 
-            lblTurn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            lblTurn.AutoSize = true;
-            lblTurn.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            lblTurn.ForeColor = Color.FromArgb(30, 30, 30);
-            lblTurn.Location = new Point(420, 18);
-            lblTurn.Name = "lblTurn";
-            lblTurn.Size = new Size(121, 28);
-            lblTurn.TabIndex = 2;
-            lblTurn.Text = "Lượt: Đen";
-            // 
-            // lblPlayer2
-            // 
-            lblPlayer2.AutoSize = true;
-            lblPlayer2.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            lblPlayer2.ForeColor = Color.Black;
-            lblPlayer2.Location = new Point(18, 14);
-            lblPlayer2.Name = "lblPlayer2";
-            lblPlayer2.Size = new Size(102, 32);
-            lblPlayer2.TabIndex = 0;
-            lblPlayer2.Text = "Player 2";
-            // 
             // lblScore2
             // 
             lblScore2.AutoSize = true;
             lblScore2.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblScore2.ForeColor = Color.Black;
+            lblScore2.ForeColor = Color.White;
             lblScore2.Location = new Point(180, 10);
             lblScore2.Name = "lblScore2";
-            lblScore2.Size = new Size(132, 41);
+            lblScore2.Size = new Size(128, 41);
             lblScore2.TabIndex = 1;
             lblScore2.Text = "Score: 2";
+            // 
+            // lblPlayer2
+            // 
+            lblPlayer2.AutoSize = true;
+            lblPlayer2.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 163);
+            lblPlayer2.ForeColor = Color.White;
+            lblPlayer2.Location = new Point(25, 10);
+            lblPlayer2.Name = "lblPlayer2";
+            lblPlayer2.Size = new Size(99, 41);
+            lblPlayer2.TabIndex = 0;
+            lblPlayer2.Text = "Trắng";
             // 
             // flpLeft
             // 
@@ -165,29 +166,13 @@
             flpLeft.Controls.Add(btnSurrender);
             flpLeft.Dock = DockStyle.Fill;
             flpLeft.FlowDirection = FlowDirection.TopDown;
-            flpLeft.Location = new Point(0, 92);
+            flpLeft.Location = new Point(0, 99);
             flpLeft.Margin = new Padding(0);
             flpLeft.Name = "flpLeft";
             flpLeft.Padding = new Padding(24, 32, 24, 32);
-            flpLeft.Size = new Size(220, 536);
+            flpLeft.Size = new Size(220, 529);
             flpLeft.TabIndex = 2;
             flpLeft.WrapContents = false;
-            // 
-            // flpRight
-            // 
-            flpRight.BackColor = Color.Transparent;
-            flpRight.Controls.Add(btnHint);
-            flpRight.Controls.Add(btnUndo);
-            flpRight.Controls.Add(btnQuit);
-            flpRight.Dock = DockStyle.Fill;
-            flpRight.FlowDirection = FlowDirection.TopDown;
-            flpRight.Location = new Point(780, 92);
-            flpRight.Margin = new Padding(0);
-            flpRight.Name = "flpRight";
-            flpRight.Padding = new Padding(24, 32, 24, 32);
-            flpRight.Size = new Size(220, 536);
-            flpRight.TabIndex = 3;
-            flpRight.WrapContents = false;
             // 
             // btnNewGame
             // 
@@ -224,6 +209,22 @@
             btnSurrender.TabIndex = 2;
             btnSurrender.Text = "Surrender";
             btnSurrender.UseVisualStyleBackColor = true;
+            // 
+            // flpRight
+            // 
+            flpRight.BackColor = Color.Transparent;
+            flpRight.Controls.Add(btnHint);
+            flpRight.Controls.Add(btnUndo);
+            flpRight.Controls.Add(btnQuit);
+            flpRight.Dock = DockStyle.Fill;
+            flpRight.FlowDirection = FlowDirection.TopDown;
+            flpRight.Location = new Point(780, 99);
+            flpRight.Margin = new Padding(0);
+            flpRight.Name = "flpRight";
+            flpRight.Padding = new Padding(24, 32, 24, 32);
+            flpRight.Size = new Size(220, 529);
+            flpRight.TabIndex = 3;
+            flpRight.WrapContents = false;
             // 
             // btnHint
             // 
@@ -265,11 +266,11 @@
             // 
             pnlBoard.BackColor = Color.Transparent;
             pnlBoard.Dock = DockStyle.Fill;
-            pnlBoard.Location = new Point(220, 92);
+            pnlBoard.Location = new Point(220, 99);
             pnlBoard.Margin = new Padding(0);
             pnlBoard.Name = "pnlBoard";
             pnlBoard.Padding = new Padding(10);
-            pnlBoard.Size = new Size(560, 536);
+            pnlBoard.Size = new Size(560, 529);
             pnlBoard.TabIndex = 4;
             // 
             // GameForm
@@ -277,6 +278,7 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
+            BackgroundImage = Properties.Resources.background_xanh_1;
             ClientSize = new Size(1000, 720);
             Controls.Add(tlpRoot);
             DoubleBuffered = true;

@@ -341,6 +341,9 @@ namespace OthelloGame.Forms
                 // Lưu snapshot trước khi AI đi (để Undo quay lại trước nước AI)
                 PushSnapshot();
 
+                await Task.Delay(500); // (delay 1 giây)
+
+
                 await Task.Run(() => _controller.HandleAIMove());
 
                 AfterAnyMoveRefreshUI();
@@ -414,8 +417,16 @@ namespace OthelloGame.Forms
             if (_isBusy) return;
             if (_history.Count == 0) return;
 
-            var snap = _history.Pop();
-            RestoreSnapshot(snap);
+            // PvAI → undo 2 bước
+            int steps = _enableAI ? 2 : 1;
+
+            for (int i = 0; i < steps; i++)
+            {
+                if (_history.Count == 0) break;
+                var snap = _history.Pop();
+                RestoreSnapshot(snap);
+            }
+
             AfterAnyMoveRefreshUI();
         }
 

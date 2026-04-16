@@ -63,6 +63,16 @@ namespace OthelloGame.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap background_xanh_1 {
+            get {
+                object obj = ResourceManager.GetObject("background-xanh-1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap image_6a6e5188 {
             get {
                 object obj = ResourceManager.GetObject("image_6a6e5188", resourceCulture);

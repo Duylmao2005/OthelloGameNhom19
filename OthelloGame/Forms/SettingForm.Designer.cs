@@ -179,6 +179,7 @@
             Controls.Add(groupBoxDifficult);
             DoubleBuffered = true;
             Name = "SettingForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Cài Đặt";
             groupBoxDifficult.ResumeLayout(false);
             groupBoxDifficult.PerformLayout();
