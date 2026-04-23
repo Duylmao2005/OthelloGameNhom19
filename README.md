@@ -70,14 +70,3 @@ settings.json: lưu độ khó AI (từ SettingForm qua AppRuntime).
 savegame.json: lưu ván đang chơi để dùng Continue.
 Gợi ý khi debug: nếu Continue/Setting “kỳ”, hãy thử xóa 2 file này.
 
-Cách chơi nhanh (trong game)
-Vào game từ Main Menu:
-Chơi đơn: Human vs AI (mặc định người chơi cầm Đen).
-AI play: chọn AI vs AI hoặc “AI đi trước” (bạn cầm Trắng).
-PvP: 2 người.
-Continue: tiếp tục ván gần nhất (nếu có autosave).
-Trong GameForm:
-Click lên bàn cờ để đi quân (chỉ hợp lệ khi đúng lượt).
-Hint để bật/tắt gợi ý.
-Undo để quay lại.
-Đóng cửa sổ giữa ván sẽ autosave (để Continue).
